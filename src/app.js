@@ -6,12 +6,35 @@ import productRoutes from "./routes/product.routes.js";
 import orderRoutes from "./routes/order.routes.js";
 import cloudinaryRoutes from "./routes/cloudinary.routes.js";
 
-
-
 const app = express();
 
-app.use(cors());
+
+
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://anik-designs.vercel.app"
+];
+
+app.use(
+    cors({
+        origin: function (origin, callback) {
+            if (!origin) return callback(null, true);
+
+            if (allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error("Not allowed by CORS"));
+            }
+        },
+        credentials: true,
+    })
+);
+
+
+
 app.use(express.json());
+
+
 
 app.use("/api/admin", adminRoutes);
 app.use("/api/products", productRoutes);
@@ -19,5 +42,19 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/cloudinary", cloudinaryRoutes);
 
 
+app.use("*", (req, res) => {
+    res.status(404).json({
+        message: "Route not found",
+    });
+});
+
+
+
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({
+        message: "Something went wrong",
+    });
+});
 
 export default app;
