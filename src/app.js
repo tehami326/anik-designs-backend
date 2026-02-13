@@ -42,11 +42,10 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/cloudinary", cloudinaryRoutes);
 
 
-app.use("*", (req, res) => {
-    res.status(404).json({
-        message: "Route not found",
-    });
+app.use((req, res) => {
+    res.status(404).json({ message: "Route not found" });
 });
+
 
 
 
